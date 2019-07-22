@@ -10,19 +10,7 @@ class Song {
 //UI Class: Handles UI tasks
 class UI {
   static displaySongs() {
-    const listSongs = [
-      {
-        title: "Play Rock",
-        author: "Someone",
-        genre: "Rock"
-      },
-      {
-        title: "Play Hip-Hop",
-        author: "Someone Else",
-        genre: "Hip-Hop"
-      }
-    ];
-    const songs = listSongs;
+    const songs = Store.getSongs();
 
     songs.forEach(song => UI.addSongToList(song));
   }
@@ -47,6 +35,18 @@ class UI {
     }
   }
 
+  static showAlert(message, className) {
+    const div = document.createElement("div");
+    div.style.color = "white";
+    div.className = `alert alert-${className} text-center mt-4 mb-4`;
+    div.appendChild(document.createTextNode(message));
+    const container = document.querySelector(".container");
+    const form = document.querySelector("#song-form");
+    container.insertBefore(div, form);
+    //Make alert vanish
+    setTimeout(() => document.querySelector(".alert").remove(), 3000);
+  }
+
   static clearFields() {
     document.querySelector("#title").value = "";
     document.querySelector("#author").value = "";
@@ -55,6 +55,27 @@ class UI {
 }
 
 //Store Class: Handles Local Storage
+class Store {
+  static getSongs() {
+    let songs;
+    if (localStorage.getItem("songs") === null) {
+      songs = [];
+    } else {
+      songs = JSON.parse(localStorage.getItem("songs"));
+    }
+    return songs;
+  }
+  static addSong(song) {
+    const songs = Store.getSongs();
+    songs.push(song);
+    localStorage.setItem("songs", JSON.stringify(songs));
+  }
+  static removeBook(title) {
+    const songs = Store.getSongs();
+    songs.filter(song => song.title !== title);
+    localStorage.setItem("songs", JSON.stringify(songs));
+  }
+}
 
 //Event: Show Songs
 document.addEventListener("DOMContentLoaded", UI.displaySongs);
@@ -67,17 +88,26 @@ document.querySelector("#song-form").addEventListener("submit", e => {
   const author = document.querySelector("#author").value;
   const genre = document.querySelector("#genre").value;
 
-  //instantiate song
-  const song = new Song(title, author, genre);
+  //Validate
+  if (title === "" || author === "" || genre === "") {
+    UI.showAlert("Please Fill Out All Fields", "danger");
+  } else {
+    //instantiate song
+    const song = new Song(title, author, genre);
 
-  //Add Song to UI
-  UI.addSongToList(song);
+    //Add Song to UI
+    UI.addSongToList(song);
 
-  //Clear Fields
-  UI.clearFields();
+    //Show success message
+    UI.showAlert("Song Successfully Added", "success");
+
+    //Clear Fields
+    UI.clearFields();
+  }
 });
 
 //Event: Delete Song
 document.querySelector("#song-list").addEventListener("click", e => {
   UI.deleteSong(e.target);
+  UI.showAlert("Song Deleted!", "warning");
 });
