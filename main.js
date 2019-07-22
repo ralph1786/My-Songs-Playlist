@@ -40,6 +40,18 @@ class UI {
 
     list.appendChild(row);
   }
+
+  static deleteSong(element) {
+    if (element.classList.contains("delete")) {
+      element.parentElement.parentElement.remove();
+    }
+  }
+
+  static clearFields() {
+    document.querySelector("#title").value = "";
+    document.querySelector("#author").value = "";
+    document.querySelector("#genre").value = "";
+  }
 }
 
 //Store Class: Handles Local Storage
@@ -57,7 +69,15 @@ document.querySelector("#song-form").addEventListener("submit", e => {
 
   //instantiate song
   const song = new Song(title, author, genre);
-  console.log(song);
+
+  //Add Song to UI
+  UI.addSongToList(song);
+
+  //Clear Fields
+  UI.clearFields();
 });
 
 //Event: Delete Song
+document.querySelector("#song-list").addEventListener("click", e => {
+  UI.deleteSong(e.target);
+});
