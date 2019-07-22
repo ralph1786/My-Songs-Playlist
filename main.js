@@ -72,15 +72,20 @@ class Store {
   }
   static removeBook(title) {
     const songs = Store.getSongs();
-    songs.filter(song => song.title !== title);
+    // songs.filter(song => song.title !== title);
+    songs.forEach((song, index) => {
+      if (song.title === title) {
+        songs.splice(index, 1);
+      }
+    });
     localStorage.setItem("songs", JSON.stringify(songs));
   }
 }
 
-//Event: Show Songs
+//EVENT: SHOW SONGS
 document.addEventListener("DOMContentLoaded", UI.displaySongs);
 
-//Event: Add Song
+//EVENT: ADD SONG
 document.querySelector("#song-form").addEventListener("submit", e => {
   e.preventDefault();
   //get form values
@@ -98,6 +103,9 @@ document.querySelector("#song-form").addEventListener("submit", e => {
     //Add Song to UI
     UI.addSongToList(song);
 
+    //Add Song To Store
+    Store.addSong(song);
+
     //Show success message
     UI.showAlert("Song Successfully Added", "success");
 
@@ -106,8 +114,11 @@ document.querySelector("#song-form").addEventListener("submit", e => {
   }
 });
 
-//Event: Delete Song
+//EVENT: DELETE SONG
 document.querySelector("#song-list").addEventListener("click", e => {
   UI.deleteSong(e.target);
+  Store.removeBook(
+    e.target.parentElement.parentElement.firstElementChild.innerText
+  );
   UI.showAlert("Song Deleted!", "warning");
 });
