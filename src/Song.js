@@ -1,5 +1,5 @@
 //Song Class: Represents a Song
-export default class Song {
+class Song {
   constructor(title, author, genre) {
     this.title = title;
     this.author = author;
@@ -7,4 +7,4 @@ export default class Song {
   }
 }
 
-// export default Song;
+export default Song;
